@@ -45,7 +45,8 @@ Step 2: Software Setup
     Install Required Libraries:
         AFMotor Library (for L293D shield)
         Download from: https://github.com/adafruit/Adafruit-Motor-Shield-library
-
+        wdt.h Library (for watchdog)
+        Download from: https://github.com/vancegroup-mirrors/avr-libc/blob/master/avr-libc/include/avr/wdt.h
     Upload Code:
         Open car.ino in Arduino IDE
         Select "Arduino Uno" from Tools > Board menu
