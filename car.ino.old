@@ -1,0 +1,134 @@
+#include <AFMotor.h>  // Include the AFMotor library to control motors with the L293D motor shield
+
+// Motor connections (Using the AFMotor library with L293D motor shield)
+AF_DCMotor motor1(1);  // Motor 1 (left motor, connected to port M1 on the motor shield)
+AF_DCMotor motor2(2);  // Motor 2 (right motor, connected to port M2 on the motor shield)
+AF_DCMotor motor3(3);  // Motor 3 (left motor, connected to port M3 on the motor shield)
+AF_DCMotor motor4(4);  // Motor 4 (right motor, connected to port M4 on the motor shield)
+
+// HC-05 Bluetooth connection settings
+char receivedChar;  // Variable to store incoming Bluetooth data
+
+void setup() {
+  Serial.begin(9600);  // Start serial communication with Bluetooth module at 9600 baud rate
+  speed();  // Set initial speed for all motors
+}
+
+void loop() {
+  // Check if data is available from the Bluetooth module
+  if (Serial.available() > 0) {
+    receivedChar = Serial.read();  // Read the incoming Bluetooth data
+
+    // Control motors based on received data
+    if (receivedChar == 'F') {  // Command to move forward
+      moveForward();
+    }
+    else if (receivedChar == 'B') {  // Command to move backward
+      moveBackward();
+    }
+    else if (receivedChar == 'L') {  // Command to turn left (use only left motors)
+      turnLeft();
+    }
+    else if (receivedChar == 'R') {  // Command to turn right (use only right motors)
+      turnRight();
+    }
+    else if (receivedChar == 'FL') {  // Command to move forward with left turn
+      moveForwardLeft();
+    }
+    else if (receivedChar == 'FR') {  // Command to move forward with right turn
+      moveForwardRight();
+    }
+    else if (receivedChar == 'DR') {  // Command to move forward with down right (left motors slower or stopped)
+      moveDownRight();
+    }
+    else if (receivedChar == 'DL') {  // Command to move forward with down left (right motors slower or stopped)
+      moveDownLeft();
+    }
+    else if (receivedChar == 'S') {  // Command to stop
+      stopMotors();
+    }
+    else {
+      stopMotors();  // Stop motors if unknown command is received
+    }
+  }
+}
+
+// Function to move motors forward (all motors forward)
+void moveForward() {
+  motor1.run(FORWARD);  // Run motor 1 forward
+  motor2.run(FORWARD);  // Run motor 2 forward
+  motor3.run(FORWARD);  // Run motor 3 forward
+  motor4.run(FORWARD);  // Run motor 4 forward
+}
+
+// Function to move motors backward (all motors backward)
+void moveBackward() {
+  motor1.run(BACKWARD);  // Run motor 1 backward
+  motor2.run(BACKWARD);  // Run motor 2 backward
+  motor3.run(BACKWARD);  // Run motor 3 backward
+  motor4.run(BACKWARD);  // Run motor 4 backward
+}
+
+// Function to turn left (use only left motors)
+void turnLeft() {
+  motor1.run(FORWARD);  // Left motor 1 forward
+  motor2.run(RELEASE);  // Stop right motor 2
+  motor3.run(FORWARD);  // Left motor 3 forward
+  motor4.run(RELEASE);  // Stop right motor 4
+}
+
+// Function to turn right (use only right motors)
+void turnRight() {
+  motor1.run(RELEASE);  // Stop left motor 1
+  motor2.run(FORWARD);  // Right motor 2 forward
+  motor3.run(RELEASE);  // Stop left motor 3
+  motor4.run(FORWARD);  // Right motor 4 forward
+}
+
+// Function to move forward with a slight left turn (using only the right motors)
+void moveForwardLeft() {
+  motor1.run(FORWARD);  // Left motor 1 forward
+  motor2.run(FORWARD);  // Right motor 2 forward
+  motor3.run(FORWARD);  // Left motor 3 forward
+  motor4.run(RELEASE);  // Stop right motor 4 (this causes slight left turn)
+}
+
+// Function to move forward with a slight right turn (using only the left motors)
+void moveForwardRight() {
+  motor1.run(FORWARD);  // Left motor 1 forward
+  motor2.run(RELEASE);  // Stop right motor 2
+  motor3.run(FORWARD);  // Left motor 3 forward
+  motor4.run(FORWARD);  // Right motor 4 forward (this causes slight right turn)
+}
+
+// Function to move forward with "down right" (left motors slower or stopped)
+void moveDownRight() {
+  motor1.run(RELEASE);  // Stop or slow left motor 1
+  motor2.run(FORWARD);  // Right motor 2 forward
+  motor3.run(RELEASE);  // Stop or slow left motor 3
+  motor4.run(FORWARD);  // Right motor 4 forward (this causes the robot to move rightward)
+}
+
+// Function to move forward with "down left" (right motors slower or stopped)
+void moveDownLeft() {
+  motor1.run(FORWARD);  // Left motor 1 forward
+  motor2.run(RELEASE);  // Stop or slow right motor 2
+  motor3.run(FORWARD);  // Left motor 3 forward
+  motor4.run(RELEASE);  // Stop or slow right motor 4 (this causes the robot to move leftward)
+}
+
+// Function to stop all motors
+void stopMotors() {
+  motor1.run(RELEASE);  // Stop motor 1
+  motor2.run(RELEASE);  // Stop motor 2
+  motor3.run(RELEASE);  // Stop motor 3
+  motor4.run(RELEASE);  // Stop motor 4
+}
+
+void speed() {
+   // Optionally, set motor speeds (0-255)
+  motor1.setSpeed(255);  // Max speed for motor 1
+  motor2.setSpeed(255);  // Max speed for motor 2
+  motor3.setSpeed(255);  // Max speed for motor 3
+  motor4.setSpeed(255);  // Max speed for motor 4
+}
